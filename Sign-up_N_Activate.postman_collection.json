@@ -1,0 +1,518 @@
+{
+	"info": {
+		"_postman_id": "c561e2d9-62fd-496d-84a5-818119394e89",
+		"name": "Sign-up and activate",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27210929",
+		"_collection_link": "https://galactic-robot-706850.postman.co/workspace/ASK-AUG23~cba81512-eae9-4756-83ce-434a865ea36e/collection/27210929-c561e2d9-62fd-496d-84a5-818119394e89?action=share&source=collection_link&creator=27210929"
+	},
+	"item": [
+		{
+			"name": "sign-in T",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"prevtoken\",pm.environment.get('tokenT'));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code 200 description\", function () {\r",
+							"    pm.response.to.have.body(\"User was created\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 300ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code 200 response body check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.user.email).to.eql(pm.environment.get(\"emTLogin\"));\r",
+							"    var prevtoken = pm.collectionVariables.get('prevtoken');\r",
+							"    if (prevtoken !== jsonData.token) {\r",
+							"        console.log(\"New Token\");\r",
+							"    } else {\r",
+							"        console.log(\"Old Token\");\r",
+							"    };\r",
+							"    pm.collectionVariables.set(\"sign-inRole\", jsonData.user.role);\r",
+							"    console.log(jsonData.user.role);\r",
+							"    pm.collectionVariables.set(\"UserName\", jsonData.user.name);\r",
+							"    if (jsonData.user.role === \"TEACHER\"){\r",
+							"        pm.collectionVariables.set(\"Tid\", jsonData.user.id);\r",
+							"        pm.environment.set(\"tokenT\", jsonData.token);\r",
+							"    } else {\r",
+							"        pm.collectionVariables.set(\"Sid\", jsonData.user.id);\r",
+							"        pm.environment.set(\"tokenS\", jsonData.token);\r",
+							"    };\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"{{emTLogin}}\",\r\n    \"password\": \"{{pwTLogin}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/sign-in",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sign-up",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set('signupEM', \"efg@pronutech.com\");\r",
+							"pm.collectionVariables.set('signupNm', \"Elly Fragrance\");\r",
+							"pm.collectionVariables.set('signupPW', \"1234hjkl\");\r",
+							"pm.collectionVariables.set('signupG', \"AUG23\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code 200 description\", function () {\r",
+							"    pm.response.to.have.body(\"User was created\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"{{signupEM}}\",\r\n    \"name\": \"{{signupNm}}\",\r\n    \"group\": \"{{signupG}}\",\r\n    \"password\": \"{{signupPW}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/sign-up",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"sign-up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "XMYSQL (activationCode)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"email\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status 200 response content\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var entry = jsonData[0];\r",
+							"    if (pm.expect(entry.email).to.eql(pm.collectionVariables.get(\"signupEM\")) && (pm.expect(entry.activationCode).to.not.eql(\"\"))) {\r",
+							"        pm.collectionVariables.set(\"ActivationCode\",entry.activationCode);\r",
+							"        pm.collectionVariables.set(\"UserId\",entry.id);\r",
+							"    };\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{xmyURL}}/users?_where=(activationCode,ne,\"\")~and(email,eq,{{signupEM}})",
+					"host": [
+						"{{xmyURL}}"
+					],
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "_where",
+							"value": "(activationCode,ne,\"\")~and(email,eq,{{signupEM}})"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sign-in S (Fail)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"prevStoken\",pm.environment.get('tokenS'));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 421\", function() {\r",
+							"    pm.response.to.have.status(421);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code 421 description\", function () {\r",
+							"    pm.response.to.have.body(\"Authentication failed. User was not activated\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 300ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code 421 response body check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.user.email).to.eql(\"\");\r",
+							"    /*var prevtoken = pm.collectionVariables.get('prevStoken');\r",
+							"    if (prevtoken !== jsonData.token) {\r",
+							"        console.log(\"New Token\");\r",
+							"    } else {\r",
+							"        console.log(\"Old Token\");\r",
+							"    };\r",
+							"    pm.collectionVariables.set(\"sign-inRole\", jsonData.user.role);\r",
+							"    console.log(jsonData.user.role);\r",
+							"    pm.collectionVariables.set(\"UserName\", jsonData.user.name);\r",
+							"    if (jsonData.user.role === \"TEACHER\"){\r",
+							"        pm.collectionVariables.set(\"Tid\", jsonData.user.id);\r",
+							"        pm.environment.set(\"tokenT\", jsonData.token);\r",
+							"    } else {\r",
+							"        pm.collectionVariables.set(\"Sid\", jsonData.user.id);\r",
+							"        pm.environment.set(\"tokenS\", jsonData.token);\r",
+							"    };*/\r",
+							"\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"{{signupEM}}\",\r\n    \"password\": \"{{signupPW}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/sign-in",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "activates account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status 200 response description\", function () {\r",
+							"    pm.response.to.have.body(\"User was activated\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/activate/{{UserId}}/{{ActivationCode}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"activate",
+						"{{UserId}}",
+						"{{ActivationCode}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sign-in S (Pass)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"prevStoken\",pm.environment.get('tokenS'));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code 200 description\", function () {\r",
+							"    pm.response.to.have.body(\"User was created\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 300ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status code 200 response body check\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.user.email).to.eql(pm.collectionVariables.get(\"signupEM\"));\r",
+							"    var prevtoken = pm.collectionVariables.get('prevStoken');\r",
+							"    if (prevtoken !== jsonData.token) {\r",
+							"        console.log(\"New Token\");\r",
+							"    } else {\r",
+							"        console.log(\"Old Token\");\r",
+							"    };\r",
+							"    pm.collectionVariables.set(\"sign-inRole\", jsonData.user.role);\r",
+							"    console.log(jsonData.user.role);\r",
+							"    pm.collectionVariables.set(\"UserName\", jsonData.user.name);\r",
+							"    if (jsonData.user.role === \"TEACHER\"){\r",
+							"        pm.collectionVariables.set(\"Tid\", jsonData.user.id);\r",
+							"        pm.environment.set(\"tokenT\", jsonData.token);\r",
+							"    } else {\r",
+							"        pm.collectionVariables.set(\"Sid\", jsonData.user.id);\r",
+							"        pm.environment.set(\"tokenS\", jsonData.token);\r",
+							"    };\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"{{signupEM}}\",\r\n    \"password\": \"{{signupPW}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/sign-in",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "del_User[T]: deletes user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 250ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(250);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status 200 response description\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"User group was updated\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{tokenT}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/users/11205",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"users",
+						"11205"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "prevtoken",
+			"value": ""
+		},
+		{
+			"key": "sign-inRole",
+			"value": ""
+		},
+		{
+			"key": "UserName",
+			"value": ""
+		},
+		{
+			"key": "Tid",
+			"value": ""
+		},
+		{
+			"key": "signupEM",
+			"value": ""
+		},
+		{
+			"key": "signupNm",
+			"value": ""
+		},
+		{
+			"key": "signupPW",
+			"value": ""
+		},
+		{
+			"key": "signupG",
+			"value": ""
+		},
+		{
+			"key": "ActivationCode",
+			"value": ""
+		},
+		{
+			"key": "UserId",
+			"value": ""
+		},
+		{
+			"key": "prevStoken",
+			"value": ""
+		},
+		{
+			"key": "Sid",
+			"value": ""
+		}
+	]
+}
